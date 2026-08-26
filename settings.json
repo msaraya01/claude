@@ -24,5 +24,20 @@
   "theme": "auto",
   "sandbox": {
     "enabled": true
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "autoMode": {
+    "allow": ["$defaults"],
+    "hard_deny": [
+      "$defaults",
+      "Actions that exfiltrate credentials or secrets"
+    ],
+    "environment": [
+      "$defaults",
+      "Organization: IONOS. Primary use: SRE/infrastructure tooling",
+      "Source control: github.com/msaraya01"
+    ]
   }
 }
