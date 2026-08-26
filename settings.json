@@ -1,0 +1,25 @@
+{
+  "model": "claude-sonnet-4-6",
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/msaraya/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "gitkraken-hooks@gitkraken": false
+  },
+  "extraKnownMarketplaces": {
+    "gitkraken": {
+      "source": {
+        "source": "directory",
+        "path": "/home/msaraya/.claude/plugins/marketplaces/gitkraken"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  },
+  "theme": "auto"
+}

@@ -1,0 +1,24 @@
+# Runtime state — not version-controlled
+cache/
+backups/
+daemon*
+debug/
+downloads/
+file-history/
+history.jsonl
+ide/
+jobs/
+paste-cache/
+policy-limits.json
+projects/
+remote-settings.json
+session-env/
+sessions/
+shell-snapshots/
+stats-cache.json
+
+# Plugin marketplace cache and installed state
+plugins/cache/
+plugins/data/
+plugins/plugin-catalog-cache.json
+plugins/known_marketplaces.json
