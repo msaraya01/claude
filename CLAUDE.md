@@ -47,21 +47,24 @@ Every new service or CLI tool must ship with:
 - On malformed input (e.g. bad JSON log line): log the error, increment an error counter, skip the line. **Never crash on bad data.**
 - On inaccessible paths or invalid config: **fail fast with a clear error** at startup, before doing any work.
 
-## Browser Extension Content Scripts
+## Pre-Ship Review & Lessons Learned
 
-When writing or modifying any browser extension content script or background service worker:
+Before any non-trivial code change is considered complete, invoke the `lessonlearned` agent as a reasoning-led audit — not a checklist pass.
 
-- **Before considering the code complete**, run the `lessonlearned` agent as a pre-ship audit: invoke it with the target file(s) and ask it to check against all known anti-patterns.
-- **After any code-review or OCR pass**, run `lessonlearned` to extract new patterns from bugs found and keep the skill current.
+**How to invoke it:**
 
-Key invariants to apply at the time of writing (not just at review):
-- All async state flags (`pending`, `flushed`, `logged`) must be set **synchronously before** any `sendMessage` call and rolled back in the callback on failure — never set optimistically after.
-- Background operations that can fail for two reasons must return **distinct response shapes** (`{notFound: true}` vs. `{ok: false}`) so callers route to the correct recovery path.
-- Every in-memory Map/Set used to park intent needs an **explicit eviction path** for the stuck case (navigated away, condition never fires).
-- Bounds-check all caller-supplied strings and numbers at the **storage ingestion point**, not at the caller.
-- On AJAX-enhanced forms, never use `e.defaultPrevented` to validate submissions — read intent (e.g. textarea content) **synchronously at capture time**.
-- SPA DOM snapshots taken at navigation time must use a **lazy re-read fallback** inside deferred callbacks (`capturedValue || freshRead()`).
-- Clear shared session/storage state **atomically before** `await`-ing any evaluation of it to prevent double-processing on rapid events.
+> "Run lessonlearned on `<file(s)>` — reason about what could go wrong before consulting the catalog."
+
+The agent reads the code with fresh eyes first, identifies failure scenarios (concurrency, boundary conditions, partial failures, silent errors), then uses its catalog to name what it finds. It will also surface violations not yet in the catalog. Trust its judgment; do not reduce it to a pattern-matching exercise.
+
+**When to invoke:**
+
+- Before marking any new feature or significant refactor as complete.
+- After any code review that surfaces bugs — to capture the pattern into the catalog so it is never repeated.
+
+**What the agent owns:**
+
+The `lessonlearned` catalog (`~/.claude/agents/lessonlearned.md`) is the authoritative record of known anti-patterns. Do not duplicate catalog content here. If a principle feels important enough to hardcode into this file, it belongs in the catalog instead.
 
 ## Documentation ("Don't Make Me Think")
 
