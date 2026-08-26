@@ -9,7 +9,7 @@ Personal Claude Code configuration: global engineering standards, custom agents,
 | Path | Purpose |
 |---|---|
 | `CLAUDE.md` | Global instructions injected into every Claude Code session — SRE/Go engineering standards, code quality rules, observability requirements |
-| `agents/lessonlearned.md` | Custom agent: living catalog of engineering anti-patterns captured from code reviews |
+| `agents/lessonlearned.md` | Custom agent: living catalog of engineering anti-patterns — reasoning-led pre-ship audit and post-review pattern capture |
 | `agents/ocr-review.md` | Custom agent: open code review runner |
 | `skills/` | Symlinks to marketplace-installed skills (see note below) |
 | `settings.json` | Claude Code settings: model, theme, statusline command |
@@ -114,6 +114,47 @@ Skills currently in use on the original machine (install these manually):
 - `sre-engineer`
 - `systematic-debugging`
 - `test-guard`
+
+---
+
+## lessonlearned agent
+
+`agents/lessonlearned.md` is a custom agent that maintains a language-agnostic catalog of engineering anti-patterns and provides two workflows:
+
+### Pre-ship audit
+
+Before marking any non-trivial feature or refactor as complete, invoke it with:
+
+> "Run lessonlearned on `<file(s)>` — reason about what could go wrong before consulting the catalog."
+
+The agent **reads code with fresh eyes first** — it does not start from the catalog. It identifies failure scenarios (concurrency, boundary conditions, partial failures, silent errors), then uses the catalog to name what it finds. It will also surface violations the catalog hasn't named yet. The order matters: reasoning first, pattern-matching second.
+
+### Post-review capture
+
+After any code review that surfaces a bug, invoke it to extract the pattern:
+
+> "Run lessonlearned post-review — capture any new patterns from the findings."
+
+The agent decides whether each finding generalizes beyond this codebase. If it does, it abstracts the root cause (not the surface symptom), writes a new principle entry with an anti-pattern and correct example, and appends it to the catalog under the appropriate domain. If nothing generalizes, it says so.
+
+### Catalog structure
+
+Principles are grouped by domain and numbered within each domain (`A1`, `B2`, `C4`, …):
+
+| Domain | Covers |
+|---|---|
+| **A — Async State** | Flag spaghetti, optimistic state, shared keys, lifecycle events, error handling, dedup scope, dedup key mismatch, concurrent state reads, intent-parking eviction, bounds at write layer |
+| **B — Web / Browser** | Capture-phase listeners, AJAX form defaultPrevented, SPA DOM snapshot staleness |
+| **C — Database / Storage** | Read transactions for composite queries, nil vs empty collections, silent enrichment errors, SQLite LastInsertId after upsert, unbounded queries |
+| **D — API Design** | Collection fields that can serialize as null |
+
+New domains are added when findings don't fit any existing group.
+
+### What the agent does NOT do
+
+- It does not run through the catalog as a fixed checklist.
+- It does not flag every pattern regardless of context — severity matters.
+- It does not add catalog entries for one-off project-specific bugs.
 
 ---
 
