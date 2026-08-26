@@ -14,10 +14,49 @@ Personal Claude Code configuration: global engineering standards, custom agents,
 | `skills/` | Symlinks to marketplace-installed skills (see note below) |
 | `settings.json` | Claude Code settings: model, theme, statusline command |
 | `statusline-command.sh` | Terminal statusline script — shows model, context %, branch, PR state, vim mode |
+| `.devcontainer/` | Dev container config — runs Claude Code with this full profile in VS Code or GitHub Codespaces |
+| `Makefile` | `build`, `lint`, `test`, `run`, `coverage` targets for the dev container |
 
 ---
 
-## Setting up on a new machine
+## Dev container (fastest path)
+
+The `.devcontainer/` directory lets you run this full profile inside VS Code or GitHub Codespaces — no manual setup steps required.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- VS Code with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+### Steps
+
+```bash
+git clone git@github.com:msaraya01/claude.git ~/my-repos/claude
+code ~/my-repos/claude
+```
+
+When VS Code prompts **"Reopen in Container"**, click it (or run **Dev Containers: Reopen in Container** from the Command Palette). The container will:
+
+1. Install Claude Code CLI and Go tooling automatically.
+2. Run `.devcontainer/setup.sh` to wire `CLAUDE.md`, agents, settings, and the statusline script into `~/.claude`.
+3. Mount a named volume so your sign-in persists across container rebuilds.
+
+Once the container is ready, open a terminal and run `claude` to sign in.
+
+> **Skills** must be reinstalled once per container — they are marketplace-managed and cannot be transferred via the repo. Run `claude skill install <name>` for each one listed in the Skills section below.
+
+### Makefile targets
+
+```bash
+make build   # build the dev container image (requires devcontainer CLI)
+make lint    # shellcheck all shell scripts
+make test    # alias for lint
+make run     # start the dev container
+```
+
+---
+
+## Setting up on a new machine (manual)
 
 ### 1. Prerequisites
 
